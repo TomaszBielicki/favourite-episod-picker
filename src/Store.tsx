@@ -1,13 +1,6 @@
 import React, { useReducer } from "react";
+import { IAction, IState } from "./interfaces";
 
-interface IState {
-  episodes: [];
-  favourite: [];
-}
-interface IAction {
-  type: string;
-  payload: any;
-}
 const initialState: IState = {
   episodes: [],
   favourite: [],
@@ -18,6 +11,8 @@ function reducer(state: IState, action: IAction): IState {
   switch (action.type) {
     case "FETCH_DATA":
       return { ...state, episodes: action.payload };
+    case "ADD_FAV":
+      return { ...state, favourite: [...state.favourite, action.payload] };
     default:
       return state;
   }
