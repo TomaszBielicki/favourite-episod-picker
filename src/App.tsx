@@ -6,7 +6,7 @@ export default function App(): JSX.Element {
   const { state, dispatch } = React.useContext(Store);
 
   useEffect(() => {
-    state.episodes.length == 0 && fetchDataAction();
+    state.episodes.length === 0 && fetchDataAction();
   });
 
   const fetchDataAction = async () => {
@@ -20,18 +20,37 @@ export default function App(): JSX.Element {
     });
   };
 
-  const toggleFavAction = (episode: IEpisode): IAction =>
-    dispatch({
+  const toggleFavAction = (episode: IEpisode): IAction => {
+    const episodeInFav = state.favourites.includes(episode);
+
+    let dispatchObj = {
       type: "ADD_FAV",
       payload: episode,
-    });
+    };
+
+    if (episodeInFav) {
+      const favWithoutEpisode = state.favourites.filter(
+        (fav: IEpisode) => fav.id !== episode.id
+      );
+      dispatchObj = {
+        type: "REMOVE_FAV",
+        payload: favWithoutEpisode,
+      };
+    }
+
+    return dispatch(dispatchObj);
+  };
 
   console.log(state);
 
   return (
     <React.Fragment>
-      <h1>Rick and Morty</h1>
-      <p>Pick your favourit episod</p>
+      <div>
+        <h1>Rick and Morty</h1>
+        <p>Pick your favourit episod</p>
+      </div>
+      <div>Favourite(s): {state.favourites.length}</div>
+
       <section>
         {state.episodes.map((episode: IEpisode) => {
           console.log(episode);
@@ -45,7 +64,11 @@ export default function App(): JSX.Element {
                     type="button"
                     onClick={() => toggleFavAction(episode)}
                   >
-                    Fav
+                    {state.favourites.find(
+                      (fav: IEpisode) => fav.id === episode.id
+                    )
+                      ? "Unfav"
+                      : "Fav"}
                   </button>
                 </div>
               </section>
